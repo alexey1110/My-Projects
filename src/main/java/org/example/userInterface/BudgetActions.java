@@ -21,7 +21,6 @@ public class BudgetActions {
                 scanner.nextLine();
 
                 budgetService.setMonthlyLimit(currentUser.getId(), limit);
-                System.out.println("Новый месячный бюджет установлен!");
                 break;
             } else if ("n".equalsIgnoreCase(choice)) {
                 System.out.println("Установка нового бюджета отменена.");

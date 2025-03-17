@@ -1,14 +1,12 @@
 package org.example;
 
 import org.example.model.User;
-import org.example.service.UserService;
-import org.example.service.GoalService;
-import org.example.service.BudgetService;
-import org.example.service.TransactionService;
+import org.example.service.*;
 import org.example.repository.UserRepository;
 import org.example.repository.GoalRepository;
 import org.example.repository.BudgetRepository;
 import org.example.repository.TransactionRepository;
+import org.example.userInterface.AdminMenu;
 import org.example.userInterface.MainMenu;
 import org.example.userInterface.UserMenu;
 
@@ -23,7 +21,8 @@ public class FinanceTrackerApp {
     private static UserService userService = new UserService(userRepository);
     private static GoalService goalService = new GoalService(goalRepository);
     private static BudgetService budgetService = new BudgetService(budgetRepository);
-    private static TransactionService transactionService = new TransactionService(transactionRepository, goalService, budgetService);
+    private static NotificationService notificationService = new NotificationService(budgetService, goalService);
+    private static TransactionService transactionService = new TransactionService(transactionRepository, goalService, budgetService, userRepository, notificationService);
 
     private static User currentUser = null;
 
@@ -31,8 +30,10 @@ public class FinanceTrackerApp {
         while (true) {
             if (currentUser == null) {
                 showMainMenu();
+            } else if (!currentUser.isAdmin()){
+                currentUser = showUserMenu();
             } else {
-                showUserMenu();
+                currentUser = showAdminMenu();
             }
         }
     }
@@ -41,7 +42,10 @@ public class FinanceTrackerApp {
         currentUser = MainMenu.show(currentUser, scanner, userService);
     }
 
-    private static void showUserMenu() {
-        UserMenu.show(scanner, currentUser, transactionService, goalService, budgetService);
+    private static User showUserMenu() {
+        return UserMenu.show(scanner, currentUser, transactionService, goalService, budgetService);
+    }
+    private static User showAdminMenu() {
+        return AdminMenu.show(scanner, currentUser, transactionService, goalService, budgetService, userService);
     }
 }

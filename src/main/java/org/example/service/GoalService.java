@@ -33,10 +33,13 @@ public class GoalService {
         }
     }
 
+    public Goal getGoalById(long goalId){
+        return goalRepository.findById(goalId).get();
+    }
+
     public List<Goal> viewGoals(long userId) {
         List<Goal> goals = goalRepository.findByUserId(userId);
         if (goals.isEmpty()) {
-            System.out.println("У вас нет активных целей.");
             return List.of();
         } else {
             return goals;

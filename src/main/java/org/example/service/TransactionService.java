@@ -1,42 +1,66 @@
 package org.example.service;
 
+import org.example.model.Goal;
 import org.example.model.Transaction;
+import org.example.model.User;
 import org.example.model.transactionEnum.TransactionType;
 import org.example.model.transactionEnum.Category;
 import org.example.repository.TransactionRepository;
+import org.example.repository.UserRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class TransactionService {
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
     private final GoalService goalService;
     private final BudgetService budgetService;
+    private final NotificationService notificationService;
 
-    public TransactionService(TransactionRepository transactionRepository, GoalService goalService, BudgetService budgetService) {
+    public TransactionService(TransactionRepository transactionRepository, GoalService goalService, BudgetService budgetService, UserRepository userRepository, NotificationService notificationService) {
         this.transactionRepository = transactionRepository;
         this.goalService = goalService;
         this.budgetService = budgetService;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
     }
 
     public void addTransaction(long userId, double amount, Category category, String description, TransactionType type, Long goalId) {
-        Transaction transaction = new Transaction(userId, amount, LocalDate.now(), category, description, type, goalId);
-        transactionRepository.save(transaction);
+        if(!userRepository.findById(userId).get().isBlocked()){
+            Transaction transaction = new Transaction(userId, amount, LocalDate.now(), category, description, type, goalId);
 
-        if (type == TransactionType.INCOME && goalId != null) {
-            double percentToSave = 0.1;
-            double amountToSave = amount * percentToSave;
-
-            goalService.addSavingsToGoal(goalId, amountToSave);
-        }
-
-        if (type == TransactionType.EXPENSE) {
-            if (budgetService.isBudgetExceeded(userId, amount)) {
-                System.out.println("Warning: Budget exceeded with this expense.");
+            if (type == TransactionType.INCOME && goalId != null) {
+                double percentToSave = 0.1;
+                double amountToSave = amount * percentToSave;
+                Goal goal = goalService.getGoalById(goalId);
+                if( amountToSave > goal.getTargetAmount() - goal.getCurrentAmount()){
+                    goalService.addSavingsToGoal(goalId, goal.getTargetAmount() - goal.getCurrentAmount());
+                    transaction.setAmount(amount - amountToSave + (goal.getTargetAmount() - goal.getCurrentAmount()));
+                    transactionRepository.save(transaction);
+                } else {
+                    goalService.addSavingsToGoal(goalId, amountToSave);
+                    transaction.setAmount(amount - amountToSave);
+                    transactionRepository.save(transaction);
+                }
+            } else if (type == TransactionType.INCOME && goalId == null){
+                transactionRepository.save(transaction);
             }
-            budgetService.addExpense(userId, amount);
+
+            if (type == TransactionType.EXPENSE) {
+                if (calculateBalance(userId) >= amount) {
+                    notificationService.notificationSend(userId, amount);
+                    budgetService.addExpense(userId, amount);
+                    transactionRepository.save(transaction);
+                } else {
+                    System.out.println("Недостаточно средств");
+                }
+            }
+        } else {
+            System.out.println("Невозможно совершить транзакцию, вы заблокированы");
         }
+
     }
 
     public void editTransaction(long userId, long transactionId, double newAmount, Category newCategory, String newDescription) {

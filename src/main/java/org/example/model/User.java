@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.util.Currency;
 import java.util.Objects;
 
 public class User {
@@ -7,11 +8,31 @@ public class User {
     private String email;
     private String password;
     private String name;
+    private boolean isAdmin;
+    private boolean isBlocked;
 
     public User(String email, String password, String name) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.isAdmin = false;
+        this.isBlocked = false;
+    }
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public void setId(long id) {

@@ -16,39 +16,61 @@ public class TransactionActions {
         double amount = scanner.nextDouble();
         scanner.nextLine();
 
+        Category category = null;
+        TransactionType type = null;
+
         System.out.print("Введите категорию:\n" +
                 "   1 FOOD,\n" +
                 "   2 TRANSPORT,\n" +
                 "   3 HEALTH,\n" +
                 "   4 SALARY,\n" +
                 "   5 OTHER.\n");
-        Category category = null;
+
         int numberCategory = scanner.nextInt();
+        scanner.nextLine();
         switch (numberCategory){
             case 1:
                 category = Category.FOOD;
+                type = TransactionType.EXPENSE;
                 break;
             case 2:
                 category = Category.TRANSPORT;
+                type = TransactionType.EXPENSE;
                 break;
             case 3:
                 category = Category.HEALTH;
+                type = TransactionType.EXPENSE;
                 break;
             case 4:
                 category = Category.SALARY;
+                type = TransactionType.INCOME;
                 break;
             case 5:
                 category = Category.OTHER;
+                type = setType(scanner, type);
                 break;
         }
 
         System.out.print("Введите описание: ");
         String description = scanner.nextLine();
 
+        Long goalId = null;
+        List<Goal> goals = goalService.viewGoals(currentUser.getId());
+        if (type == TransactionType.INCOME && goals.size() > 0){
+            System.out.print("Введите ID цели: \n");
+            for(Goal goal : goals){
+                System.out.println(goal);
+            }
+            long strGoalId = scanner.nextLong();
+            goalId = strGoalId == 0 ? null : strGoalId;
+        }
+        transactionService.addTransaction(currentUser.getId(), amount, category, description, type, goalId);
+    }
+
+    public static TransactionType setType(Scanner scanner, TransactionType type){
         System.out.print("Введите тип:\n" +
                 "    1 INCOME,\n" +
                 "    2 EXPENSE.\n");
-        TransactionType type = null;
         int numberType = scanner.nextInt();
         switch (numberType) {
             case 1:
@@ -58,18 +80,8 @@ public class TransactionActions {
                 type = TransactionType.EXPENSE;
                 break;
         }
-
-        System.out.print("Введите ID цели, если есть (или 0 если нет): \n");
-        List<Goal> goals = goalService.viewGoals(currentUser.getId());
-        for(Goal goal : goals){
-            System.out.println(goal);
-        }
-        Long goalId = scanner.nextLong();
-        if (goalId == 0) goalId = null;
-
-        transactionService.addTransaction(currentUser.getId(), amount, category, description, type, goalId);
+        return type;
     }
-
     public static void edit (Scanner scanner, TransactionService transactionService, User currentUser) {
         System.out.print("Введите ID транзакции для редактирования: \n");
         transactionService.viewAllTransactions(currentUser.getId());

@@ -3,6 +3,8 @@ package org.example.service;
 import org.example.model.User;
 import org.example.repository.UserRepository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class UserService {
@@ -13,6 +15,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public Optional<User> getUserById(long id){
+        return Optional.of(userRepository.findById(id).get());
+    }
     public User registerUser(String email, String password, String name) {
         User user = new User(email, password, name);
         if (userRepository.save(user)) {
@@ -53,7 +58,7 @@ public class UserService {
             User updatedUser = new User(newEmail, newPassword, newName);
             updatedUser.setId(user.get().getId());
 
-            if (userRepository.edit(user.get(), updatedUser)) {
+            if (userRepository.update(user.get(), updatedUser)) {
                 System.out.println("User updated.");
             } else {
                 System.out.println("Update failed.");
@@ -61,5 +66,17 @@ public class UserService {
         } else {
             System.out.println("User not found.");
         }
+    }
+
+    public Map<Long, User> getAllUsers(){
+        return userRepository.getAllUsers();
+    }
+
+    public void blockUser(long userId){
+        userRepository.blockUser(userId);
+    }
+
+    public void unblockUser(long userId){
+        userRepository.unblockUser(userId);
     }
 }

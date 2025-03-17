@@ -50,13 +50,11 @@ public class GoalActions {
         scanner.nextLine();
 
         goalService.createGoal(currentUser.getId(), goalName, amount);
-        System.out.println("Цель добавлена успешно!");
     }
 
     private static void viewGoals(GoalService goalService, User currentUser) {
         List<Goal> goals = goalService.viewGoals(currentUser.getId());
         if (goals.isEmpty()) {
-            System.out.println("У вас нет целей.");
         } else {
             System.out.println("Ваши цели:");
             for (Goal goal : goals) {

@@ -15,6 +15,9 @@ public class UserRepository {
         }
         if (!existEmail(user.getEmail())) {
             user.setId(idCount++);
+            if (user.getId() == 1){
+                user.setAdmin(true);
+            }
             userMap.put(user.getId(), user);
             return true;
         }
@@ -36,7 +39,16 @@ public class UserRepository {
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst();
     }
+    public Optional<User> findById(long id) {
+        return Optional.ofNullable(userMap.get(id));
+    }
 
+    public void blockUser(long id){
+        findById(id).get().setBlocked(true);
+    }
+    public void unblockUser(long id){
+        findById(id).get().setBlocked(false);
+    }
     public boolean delete(String email) {
         Optional<User> user = findByEmail(email);
         return user.map(u -> {
@@ -45,7 +57,7 @@ public class UserRepository {
         }).orElse(false);
     }
 
-    public boolean edit(User user, User newUser) {
+    public boolean update(User user, User newUser) {
         if (user == null || newUser == null) {
             return false;
         }

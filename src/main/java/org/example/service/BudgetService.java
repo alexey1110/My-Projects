@@ -40,9 +40,6 @@ public class BudgetService {
             budget.addExpense(amount);
             budgetRepository.update(budget);
             System.out.println("Расход добавлен.");
-            if (budget.isExceeded()) {
-                System.out.println("Бюджет превышен!");
-            }
         } else {
             System.out.println("У пользователя нет установленного бюджета.");
         }
