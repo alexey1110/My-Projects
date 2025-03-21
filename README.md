@@ -66,7 +66,7 @@
 
 - AJAX-обработчики — автоматическое обновление данных
 
-3 Finance Tracker - 
+3 Finance Tracker - https://github.com/alexey1110/YLABHW_NEW/tree/new-branch
 
 Описание проекта
 
