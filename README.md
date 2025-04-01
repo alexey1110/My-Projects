@@ -1,6 +1,10 @@
 📌 Портфолио проектов
 
+
+
 1 TaskListManager - https://github.com/alexey1110/TaskListManager
+
+
 
 Описаие проекта
 
@@ -40,6 +44,8 @@ JUnit 5 + Mockito — тестирование
 
 Конфигурация (Config/) — настройка CORS, Swagger и безопасности
 
+
+
 2 Online Learning Platform - https://github.com/alexey1110/My-Projects/tree/main/online-learning
 
 Описание проекта
@@ -73,6 +79,8 @@ JUnit 5 + Mockito — тестирование
 
 - Конфигурация (CorsConfig) — CORS
 
+
+
 3 Music Store Web Application - https://github.com/alexey1110/My-Projects/tree/main/music-store
 
 Описание проекта
@@ -103,6 +111,8 @@ JUnit 5 + Mockito — тестирование
 - Hibernate Entities — объекты для работы с БД
 
 - AJAX-обработчики — автоматическое обновление данных
+
+
 
 4 Finance Tracker - https://github.com/alexey1110/My-Projects/tree/master
 
